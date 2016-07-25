@@ -5,6 +5,8 @@ import static org.junit.Assert.assertEquals;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.time.Duration;
+import java.util.Date;
 import java.util.List;
 
 public class SuperSimpleStocksTest {
@@ -28,10 +30,13 @@ public class SuperSimpleStocksTest {
             stocks.getStocks().get("GIN").recordTrade(1, TradeDirection.Buy, 25.0);
         }
         for (int i = 0; i < 2; i++) {
-            stocks.getStocks().get("TEA").recordTrade(2, TradeDirection.Sell, 20.0);
+            stocks.getStocks().get("TEA").recordTrade(2, TradeDirection.Sell, 30.0);
             stocks.getStocks().get("ALE").recordTrade(2, TradeDirection.Buy, 20.0);
             stocks.getStocks().get("JOE").recordTrade(2, TradeDirection.Buy, 20.0);
         }
+
+        stocks.getStocks().get("TEA").getTrades().get(0).setTimestamp(
+                new Date(new Date().getTime() - Duration.ofMinutes(16).toMillis()));
     }
 
     @Test
@@ -45,7 +50,7 @@ public class SuperSimpleStocksTest {
 
         assertEquals(2, trades.get(11).getShares());
         assertEquals(TradeDirection.Sell, trades.get(11).getDirection());
-        assertEquals(20.0, trades.get(11).getPrice(), 0.001);
+        assertEquals(30.0, trades.get(11).getPrice(), 0.001);
     }
 
     @Test
@@ -68,7 +73,7 @@ public class SuperSimpleStocksTest {
 
     @Test
     public void calculateStockPriceLast15min() {
-        assertEquals(20.0, stocks.getStocks().get("TEA").price(), 0.001);
+        assertEquals(23.077, stocks.getStocks().get("TEA").price(), 0.001);
         assertEquals(20.0, stocks.getStocks().get("POP").price(), 0.001);
         assertEquals(20.0, stocks.getStocks().get("ALE").price(), 0.001);
         assertEquals(25.0, stocks.getStocks().get("GIN").price(), 0.001);
@@ -77,6 +82,6 @@ public class SuperSimpleStocksTest {
 
     @Test
     public void calculateBGCEAllShareIndex() {
-        assertEquals(20.913, stocks.calculateBGCEAllShareIndex(), 0.001);
+        assertEquals(21.519, stocks.calculateBGCEAllShareIndex(), 0.001);
     }
 }
